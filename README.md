@@ -30,7 +30,7 @@
 
 仓库内已包含 Windows 安装包：
 
-- [release/Today Trajectory_0.1.0_x64-setup.exe](./release/Today%20Trajectory_0.1.0_x64-setup.exe)
+- [release/Today Trajectory_2.0.0_x64-setup.exe](./release/Today%20Trajectory_2.0.0_x64-setup.exe)
 
 双击即可安装。
 
@@ -141,4 +141,3 @@ release/             仓库内提供的安装包
 - 更完整的设置页
 - 更丰富的数据统计
 - 更完整的移动端适配
-
