@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+dist
+coverage
+*.log
+.codex-run/
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+src-tauri/target/

@@ -1,0 +1,22 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main",
+    "focus-pet"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-get-all-windows",
+    "core:window:allow-hide",
+    "core:window:allow-request-user-attention",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-position",
+    "core:window:allow-set-size",
+    "core:window:allow-show",
+    "core:window:allow-start-dragging",
+    "core:window:allow-unminimize"
+  ]
+}

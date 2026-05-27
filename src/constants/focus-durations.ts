@@ -1,0 +1,3 @@
+export const DEFAULT_FOCUS_DURATION = 25;
+export const FOCUS_DURATION_OPTIONS = [15, 25, 40, 60];
+
