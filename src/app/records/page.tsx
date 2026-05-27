@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { BackButton } from "@/components/common/back-button";
 import { EmptyState } from "@/components/common/empty-state";
@@ -11,14 +11,30 @@ import { DailySummary } from "@/components/today/daily-summary";
 import { RecordTimeline } from "@/components/today/record-timeline";
 import { useTodayRecords } from "@/hooks/use-today-records";
 import { getDailyCopyIndex, recordsCopySets } from "@/lib/copy";
+import { deleteRecord } from "@/lib/storage/focus-records-storage";
 import { formatDate } from "@/lib/time/format-date";
 
 export default function RecordsPage() {
   const { records, stats } = useTodayRecords();
+  const [deletingRecordId, setDeletingRecordId] = useState<string | null>(null);
   const copy = useMemo(
     () => recordsCopySets[getDailyCopyIndex(recordsCopySets.length, 13)],
     [],
   );
+
+  function handleDeleteRecord(recordId: string) {
+    const target = records.find((record) => record.id === recordId);
+    const taskLabel = target?.taskName ?? "这条记录";
+    const confirmed = window.confirm(`确定删除“${taskLabel}”吗？删除后无法恢复。`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingRecordId(recordId);
+    deleteRecord(recordId);
+    setDeletingRecordId(null);
+  }
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
@@ -42,7 +58,13 @@ export default function RecordsPage() {
           <DailySummary totalMinutes={stats.totalMinutes} sessionCount={stats.sessionCount} />
 
           {records.length > 0 ? (
-            <RecordTimeline records={records} title={copy.timelineTitle} eyebrow="Full Trace" />
+            <RecordTimeline
+              deletingRecordId={deletingRecordId}
+              eyebrow="Full Trace"
+              onDeleteRecord={handleDeleteRecord}
+              records={records}
+              title={copy.timelineTitle}
+            />
           ) : (
             <EmptyState
               title={copy.emptyTitle}

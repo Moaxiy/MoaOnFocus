@@ -9,6 +9,7 @@ import { SecondaryButton } from "@/components/common/secondary-button";
 import { FocusTimer } from "@/components/focus/focus-timer";
 import { SessionInfoCard } from "@/components/focus/session-info-card";
 import { useFocusSession } from "@/hooks/use-focus-session";
+import { playCompletionSound } from "@/lib/audio/focus-completion-sound";
 import { getDailyCopyIndex, sessionCopySets } from "@/lib/copy";
 import { hideFocusPet, showFocusPet } from "@/lib/desktop/focus-pet-window";
 import { completeActiveSession } from "@/lib/focus/complete-active-session";
@@ -91,6 +92,7 @@ export default function FocusSessionPage() {
 
     leavingRef.current = "done";
     completeActiveSession();
+    void playCompletionSound();
     hideFocusPet();
     router.replace("/focus/done");
   }, [remainingSeconds, router, session, storeReadySnapshot]);

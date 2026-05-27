@@ -497,6 +497,21 @@ body.pet-window::before {
   background: linear-gradient(145deg, #6a6254, #242421);
 }
 
+.record-delete-button {
+  opacity: 0.78;
+}
+
+.record-delete-button:hover:not(:disabled) {
+  border-color: rgba(177, 86, 50, 0.48);
+  color: #8a3b24;
+  background: rgba(177, 86, 50, 0.08);
+}
+
+.record-delete-button:disabled {
+  opacity: 0.52;
+  cursor: wait;
+}
+
 @keyframes pet-float {
   0%,
   100% {

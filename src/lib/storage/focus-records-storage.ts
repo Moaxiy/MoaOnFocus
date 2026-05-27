@@ -18,6 +18,18 @@ export function saveRecord(record: FocusRecord) {
   }));
 }
 
+export function deleteRecord(recordId: string) {
+  updateStore((current) => {
+    const records = current.records.filter((record) => record.id !== recordId);
+
+    return {
+      ...current,
+      records,
+      lastRecord: records.at(-1) ?? null,
+    };
+  });
+}
+
 export function subscribeToRecords(callback: () => void) {
   return subscribeToStore(callback);
 }

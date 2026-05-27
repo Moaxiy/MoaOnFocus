@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 
 import { useFocusPetAppearance } from "@/hooks/use-focus-pet-appearance";
+import { playCompletionSound } from "@/lib/audio/focus-completion-sound";
 import { hideFocusPet } from "@/lib/desktop/focus-pet-window";
 import { completeActiveSession } from "@/lib/focus/complete-active-session";
 import { getActiveSession } from "@/lib/storage/focus-records-storage";
@@ -48,6 +49,8 @@ export default function FocusPetPage() {
   const [holdingToFinish, setHoldingToFinish] = useState(false);
   const petAppearance = useFocusPetAppearance();
   const finishingRef = useRef(false);
+  const dismissedRef = useRef(false);
+  const petStateRef = useRef<PetState | null>(petState);
   const longPressTimerRef = useRef<number | null>(null);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -71,19 +74,37 @@ export default function FocusPetPage() {
     }
   }
 
-  async function finishFromPet() {
+  const performPetFinish = useCallback(async (playSound: boolean) => {
     if (finishingRef.current) {
       return;
     }
 
     finishingRef.current = true;
     clearLongPress();
+    const hadPetState = petStateRef.current !== null;
     const record = completeActiveSession();
 
     if (record) {
+      if (playSound) {
+        await playCompletionSound();
+      }
+
       await hideFocusPet();
+      dismissedRef.current = true;
+      setPetState(null);
+      return;
     }
-  }
+
+    if (hadPetState) {
+      if (playSound) {
+        await playCompletionSound();
+      }
+
+      await hideFocusPet();
+      dismissedRef.current = true;
+      setPetState(null);
+    }
+  }, []);
 
   function handlePointerDown(event: PointerEvent<HTMLElement>) {
     if (!petState) {
@@ -93,7 +114,7 @@ export default function FocusPetPage() {
     pointerStartRef.current = { x: event.clientX, y: event.clientY };
     setHoldingToFinish(true);
     longPressTimerRef.current = window.setTimeout(() => {
-      finishFromPet();
+      void performPetFinish(false);
     }, LONG_PRESS_MS);
   }
 
@@ -116,6 +137,10 @@ export default function FocusPetPage() {
   }
 
   useEffect(() => {
+    petStateRef.current = petState;
+  }, [petState]);
+
+  useEffect(() => {
     document.documentElement.classList.add("pet-window");
     document.body.classList.add("pet-window");
 
@@ -130,6 +155,24 @@ export default function FocusPetPage() {
       document.body.classList.remove("pet-window");
     };
   }, []);
+
+  useEffect(() => {
+    if (dismissedRef.current) {
+      return;
+    }
+
+    if (petState && petState.remainingSeconds === 0) {
+      queueMicrotask(() => {
+        void performPetFinish(true);
+      });
+      return;
+    }
+
+    if (!petState) {
+      dismissedRef.current = true;
+      void hideFocusPet();
+    }
+  }, [petState, performPetFinish]);
 
   const remainingSeconds = petState?.remainingSeconds ?? 0;
   const progressTone = remainingSeconds <= 60 ? "ending" : "steady";

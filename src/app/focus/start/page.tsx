@@ -10,6 +10,7 @@ import { DurationPicker, type DurationPickerHandle } from "@/components/focus/du
 import { PetAppearancePicker } from "@/components/focus/pet-appearance-picker";
 import { TaskInput } from "@/components/focus/task-input";
 import { useFocusPetAppearance } from "@/hooks/use-focus-pet-appearance";
+import { primeCompletionSound } from "@/lib/audio/focus-completion-sound";
 import { getDailyCopyIndex, startCopySets } from "@/lib/copy";
 import { showFocusPet } from "@/lib/desktop/focus-pet-window";
 import { setFocusPetAppearanceId } from "@/lib/storage/focus-pet-storage";
@@ -84,6 +85,7 @@ export default function StartFocusPage() {
     };
 
     setStarting(true);
+    await primeCompletionSound();
     setActiveSession(JSON.stringify(payload));
     await showFocusPet();
     router.push("/focus/session");

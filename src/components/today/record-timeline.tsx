@@ -6,12 +6,16 @@ type RecordTimelineProps = {
   records: FocusRecord[];
   title?: string;
   eyebrow?: string;
+  onDeleteRecord?: (recordId: string) => void;
+  deletingRecordId?: string | null;
 };
 
 export function RecordTimeline({
   records,
   title = "今天做了哪些事",
   eyebrow = "Time Trace",
+  onDeleteRecord,
+  deletingRecordId = null,
 }: RecordTimelineProps) {
   return (
     <section className="space-y-4 stagger-2">
@@ -23,9 +27,16 @@ export function RecordTimeline({
           {eyebrow}
         </span>
       </div>
+
       <div className="space-y-3">
         {records.map((record, index) => (
-          <TimelineRecordItem key={record.id} index={index} {...record} />
+          <TimelineRecordItem
+            key={record.id}
+            deleting={deletingRecordId === record.id}
+            index={index}
+            onDelete={onDeleteRecord}
+            {...record}
+          />
         ))}
       </div>
     </section>
