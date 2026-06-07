@@ -6,6 +6,7 @@ import {
   getRecordsSnapshot,
   subscribeToRecords,
 } from "@/lib/storage/focus-records-storage";
+import { getRecordsStoreReadySnapshot } from "@/lib/storage/records-store";
 import { getTodayRecords } from "@/lib/time/get-today-records";
 import type { DailySummaryStats } from "@/types/daily-summary-stats";
 import type { FocusRecord } from "@/types/focus-record";
@@ -37,6 +38,11 @@ function sortRecordsByStartTime(records: FocusRecord[]) {
 }
 
 export function useFocusRecords(scope: RecordsScope = "all") {
+  const readySnapshot = useSyncExternalStore(
+    subscribeToRecords,
+    getRecordsStoreReadySnapshot,
+    () => "loading",
+  );
   const recordsSnapshot = useSyncExternalStore(
     subscribeToRecords,
     getRecordsSnapshot,
@@ -65,6 +71,7 @@ export function useFocusRecords(scope: RecordsScope = "all") {
   }, [records]);
 
   return {
+    ready: readySnapshot === "ready",
     records,
     stats,
   };

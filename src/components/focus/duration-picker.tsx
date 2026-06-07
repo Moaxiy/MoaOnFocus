@@ -104,7 +104,7 @@ export const DurationPicker = forwardRef<DurationPickerHandle, DurationPickerPro
           <span className="text-sm text-[var(--text-soft)]">选择专注时长</span>
           <select
             ref={nativeSelectRef}
-            defaultValue=""
+            value={customActive ? "custom" : value ? String(value) : ""}
             onChange={(event) => handleNativeSelect(event.target.value)}
             onInput={(event) => handleNativeSelect(event.currentTarget.value)}
             onBlur={(event) => handleNativeSelect(event.currentTarget.value)}
@@ -118,13 +118,6 @@ export const DurationPicker = forwardRef<DurationPickerHandle, DurationPickerPro
             ))}
             <option value="custom">自定义</option>
           </select>
-          <button
-            type="button"
-            onClick={syncNativeSelection}
-            className="w-full rounded-full border border-[var(--accent-strong)] bg-[var(--accent-soft)] px-4 py-3 text-sm text-[var(--accent-strong)]"
-          >
-            确认这个时长
-          </button>
         </label>
 
         <p className="text-sm text-[var(--accent-strong)]">{selectedLabel}</p>

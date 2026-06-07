@@ -512,6 +512,84 @@ body.pet-window::before {
   cursor: wait;
 }
 
+.summary-loading {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.summary-loading span {
+  min-height: 86px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent),
+    var(--surface-muted);
+  background-size: 180% 100%;
+  animation: quiet-shimmer 1.8s ease-in-out infinite;
+}
+
+.confirm-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(43, 34, 24, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.confirm-dialog-panel {
+  width: min(100%, 440px);
+  padding: 22px;
+}
+
+.confirm-dialog-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.confirm-dialog-eyebrow {
+  margin: 0;
+  color: var(--sun);
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.confirm-dialog-copy h2 {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  line-height: 1.12;
+}
+
+.confirm-dialog-copy p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.confirm-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.confirm-dialog-danger {
+  border-color: rgba(138, 59, 36, 0.72);
+  background: #8a3b24;
+  box-shadow: 0 16px 30px rgba(138, 59, 36, 0.18);
+}
+
+.confirm-dialog-danger:hover:not(:disabled) {
+  background: #6f2e1d;
+}
+
 .desktop-exit-overlay {
   position: fixed;
   inset: 0;
@@ -678,6 +756,16 @@ body.pet-window::before {
 
   to {
     outline: 10px solid color-mix(in srgb, var(--pet-accent, rgba(207, 123, 62, 0.46)) 4%, transparent);
+  }
+}
+
+@keyframes quiet-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+
+  to {
+    background-position: -80% 0;
   }
 }
 

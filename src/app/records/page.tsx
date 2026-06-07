@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { BackButton } from "@/components/common/back-button";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { EmptyState } from "@/components/common/empty-state";
 import { PageHeader } from "@/components/common/page-header";
 import { PrimaryButton } from "@/components/common/primary-button";
@@ -103,24 +104,27 @@ function getPageCopy(scope: RecordsScope) {
 
 export default function RecordsPage() {
   const [scope, setScope] = useState<RecordsScope>("all");
-  const { records, stats } = useFocusRecords(scope);
+  const { ready, records, stats } = useFocusRecords(scope);
   const [deletingRecordId, setDeletingRecordId] = useState<string | null>(null);
+  const [pendingDeleteRecord, setPendingDeleteRecord] = useState<FocusRecord | null>(null);
 
   const copy = useMemo(() => getPageCopy(scope), [scope]);
   const groups = useMemo(() => groupRecordsByDay(records), [records]);
 
   function handleDeleteRecord(recordId: string) {
     const target = records.find((record) => record.id === recordId);
-    const taskLabel = target?.taskName ?? "这条记录";
-    const confirmed = window.confirm(`确定删除“${taskLabel}”吗？删除后无法恢复。`);
+    setPendingDeleteRecord(target ?? null);
+  }
 
-    if (!confirmed) {
+  function confirmDeleteRecord() {
+    if (!pendingDeleteRecord) {
       return;
     }
 
-    setDeletingRecordId(recordId);
-    deleteRecord(recordId);
+    setDeletingRecordId(pendingDeleteRecord.id);
+    deleteRecord(pendingDeleteRecord.id);
     setDeletingRecordId(null);
+    setPendingDeleteRecord(null);
   }
 
   return (
@@ -170,9 +174,16 @@ export default function RecordsPage() {
             </p>
           </div>
 
-          <DailySummary totalMinutes={stats.totalMinutes} sessionCount={stats.sessionCount} />
+          {ready ? (
+            <DailySummary totalMinutes={stats.totalMinutes} sessionCount={stats.sessionCount} />
+          ) : (
+            <div className="summary-loading stagger-1" aria-label="正在读取记录">
+              <span />
+              <span />
+            </div>
+          )}
 
-          {records.length > 0 ? (
+          {!ready ? null : records.length > 0 ? (
             <div className="space-y-8">
               {groups.map((group, index) => (
                 <RecordTimeline
@@ -195,6 +206,19 @@ export default function RecordsPage() {
           )}
         </div>
       </section>
+
+      {pendingDeleteRecord ? (
+        <ConfirmDialog
+          danger
+          eyebrow="Delete Record"
+          title="删除这条记录吗？"
+          description={`“${pendingDeleteRecord.taskName}”会从时间轨迹中移除，删除后无法恢复。`}
+          confirmLabel="删除记录"
+          disabled={deletingRecordId !== null}
+          onCancel={() => setPendingDeleteRecord(null)}
+          onConfirm={confirmDeleteRecord}
+        />
+      ) : null}
     </main>
   );
 }

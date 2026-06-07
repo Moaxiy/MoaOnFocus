@@ -200,7 +200,7 @@ export default function FocusPetPage() {
         </div>
         <div className="pet-content">
           <p className="pet-label">
-            {holdingToFinish ? "松手取消" : petState ? "长按完成" : "等待开始"}
+            {holdingToFinish ? "继续按住" : petState ? "长按完成" : "等待开始"}
           </p>
           <p className="pet-time">{formatRemaining(remainingSeconds)}</p>
           <p className="pet-task">{petState?.taskName ?? "今日轨迹"}</p>

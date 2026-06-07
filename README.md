@@ -55,7 +55,7 @@ Today Trajectory 是一个偏“时间回看”而不是单纯“时间管理”
 
 仓库内提供当前最新版 Windows 安装包：
 
-- [release/Today Trajectory_2.0.1_x64-setup.exe](./release/Today%20Trajectory_2.0.1_x64-setup.exe)
+- [release/Today Trajectory_2.0.3_x64-setup.exe](./release/Today%20Trajectory_2.0.3_x64-setup.exe)
 
 说明：
 

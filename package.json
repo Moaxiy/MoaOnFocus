@@ -1,6 +1,6 @@
 {
   "name": "codex-0526",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "private": true,
   "description": "Today trajectory focus tracker MVP",
   "scripts": {

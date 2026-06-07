@@ -120,7 +120,7 @@ export default function StartFocusPage() {
           <div className="stagger-2 space-y-3">
             <PrimaryButton
               className="w-full sm:w-auto"
-              disabled={starting || !hasTaskName || (customActive && !customMinutes.trim())}
+              disabled={starting || !canSubmit}
               onClick={handleStart}
             >
               {starting ? "正在唤起桌宠..." : "开始记录这段时间"}
