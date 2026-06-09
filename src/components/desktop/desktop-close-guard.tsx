@@ -1,16 +1,63 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+type CloseAction = "exit" | "hide";
+
+const CLOSE_ACTION_SESSION_KEY = "today-trajectory-close-action-this-session";
+
+function getRememberedCloseAction(): CloseAction | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const value = window.sessionStorage.getItem(CLOSE_ACTION_SESSION_KEY);
+  return value === "exit" || value === "hide" ? value : null;
+}
+
+function setRememberedCloseAction(action: CloseAction) {
+  if (typeof window !== "undefined") {
+    window.sessionStorage.setItem(CLOSE_ACTION_SESSION_KEY, action);
+  }
+}
 
 export function DesktopCloseGuard() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState<"exit" | "hide" | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<CloseAction | null>(null);
+  const [rememberForSession, setRememberForSession] = useState(false);
   const windowRef = useRef<Awaited<ReturnType<typeof import("@tauri-apps/api/window").getCurrentWindow>> | null>(
     null,
   );
   const invokeRef = useRef<((command: string, args?: Record<string, unknown>) => Promise<unknown>) | null>(
     null,
   );
+
+  const executeCloseAction = useCallback(async (action: CloseAction, shouldRemember: boolean) => {
+    const currentWindow = windowRef.current;
+    const invoke = invokeRef.current;
+
+    if (!currentWindow) {
+      return;
+    }
+
+    setIsSubmitting(action);
+
+    try {
+      if (shouldRemember) {
+        setRememberedCloseAction(action);
+      }
+
+      if (action === "exit" && invoke) {
+        await invoke("exit_application");
+        return;
+      }
+
+      await currentWindow.hide();
+      setIsOpen(false);
+    } finally {
+      setIsSubmitting(null);
+    }
+  }, []);
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
@@ -32,7 +79,15 @@ export function DesktopCloseGuard() {
 
         unlisten = await currentWindow.onCloseRequested(async (event) => {
           event.preventDefault();
+
+          const rememberedAction = getRememberedCloseAction();
+          if (rememberedAction) {
+            await executeCloseAction(rememberedAction, false);
+            return;
+          }
+
           setIsSubmitting(null);
+          setRememberForSession(false);
           setIsOpen(true);
         });
       } catch {
@@ -47,29 +102,10 @@ export function DesktopCloseGuard() {
         unlisten();
       }
     };
-  }, []);
+  }, [executeCloseAction]);
 
-  async function handleAction(action: "exit" | "hide") {
-    const currentWindow = windowRef.current;
-    const invoke = invokeRef.current;
-
-    if (!currentWindow) {
-      return;
-    }
-
-    setIsSubmitting(action);
-
-    try {
-      if (action === "exit" && invoke) {
-        await invoke("exit_application");
-        return;
-      }
-
-      await currentWindow.hide();
-      setIsOpen(false);
-    } finally {
-      setIsSubmitting(null);
-    }
+  async function handleAction(action: CloseAction, shouldRemember = rememberForSession) {
+    await executeCloseAction(action, shouldRemember);
   }
 
   if (!isOpen) {
@@ -98,6 +134,16 @@ export function DesktopCloseGuard() {
             如果你只是暂时离开，可以把 Today Trajectory 收进后台；如果今天已经结束，也可以直接退出软件。
           </p>
         </div>
+
+        <label className="desktop-exit-remember">
+          <input
+            checked={rememberForSession}
+            disabled={isSubmitting !== null}
+            onChange={(event) => setRememberForSession(event.target.checked)}
+            type="checkbox"
+          />
+          <span>本次使用不再提醒，记住我的选择。</span>
+        </label>
 
         <div className="desktop-exit-actions">
           <button

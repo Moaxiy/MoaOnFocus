@@ -665,6 +665,34 @@ body.pet-window::before {
   line-height: 1.9;
 }
 
+.desktop-exit-remember {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.52);
+  padding: 10px 14px;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.desktop-exit-remember input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.desktop-exit-remember:has(input:checked) {
+  border-color: rgba(30, 123, 111, 0.38);
+  background: rgba(30, 123, 111, 0.09);
+  color: var(--accent-strong);
+}
+
 .desktop-exit-actions {
   margin-top: 22px;
   display: grid;
