@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/focus/layout,_N_T_/focus/session/layout,_N_T_/focus/session/page,_N_T_/focus/session"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/focus/session/__PAGE__",
+    "/focus/session",
+    "/focus",
+    "/_index",
+    "/_head"
+  ]
+}

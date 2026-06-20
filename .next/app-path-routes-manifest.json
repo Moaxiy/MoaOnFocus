@@ -1,0 +1,10 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/focus/done/page": "/focus/done",
+  "/focus/session/page": "/focus/session",
+  "/focus/start/page": "/focus/start",
+  "/page": "/",
+  "/pet/page": "/pet",
+  "/records/page": "/records"
+}
